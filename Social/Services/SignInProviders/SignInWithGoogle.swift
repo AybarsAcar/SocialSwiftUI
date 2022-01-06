@@ -1,0 +1,84 @@
+//
+//  SignInWithGoogle.swift
+//  Social
+//
+//  Created by Aybars Acar on 6/1/2022.
+//
+
+import Foundation
+import SwiftUI
+import GoogleSignIn
+import FirebaseCore
+import FirebaseAuth
+
+
+class SignInWithGoogle {
+  
+  static let shared = SignInWithGoogle()
+  private init() { }
+  
+  var onboardingView: OnboardingView!
+  
+  func signIn(view: OnboardingView) {
+    
+    self.onboardingView = view
+    
+    guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+    
+    // Create Google Sign In configuration object.
+    let config = GIDConfiguration(clientID: clientID)
+    
+    // Set is loading for an indicator
+    
+    GIDSignIn.sharedInstance.signIn(with: config, presenting: getRootViewController()) { [self] user, error in
+      
+      if let error = error {
+        print(error.localizedDescription)
+        self.onboardingView.showError.toggle()
+        self.onboardingView.errorMessage = error.localizedDescription
+        return
+      }
+      
+      guard
+        let authentication = user?.authentication,
+        let idToken = authentication.idToken
+      else {
+        return
+      }
+      
+      guard let profile = user?.profile else { return }
+      
+      let fullName = profile.name
+      let email = profile.email
+      
+
+      let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
+      
+      
+      // Sign them into  Firebase Auth..
+      Auth.auth().signIn(with: credential) { result, error in
+        
+        if let error = error {
+          print(error.localizedDescription)
+          self.onboardingView.showError.toggle()
+          self.onboardingView.errorMessage = error.localizedDescription
+          return
+        }
+        
+        // Displaying username
+        guard let user = result?.user else { return }
+        
+        print(user.displayName ?? "SUCCESS!!")
+      }
+    }
+  }
+  
+  
+  private func getRootViewController() -> UIViewController {
+    guard let screen = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return .init() }
+    
+    guard let root = screen.windows.first?.rootViewController else { return .init() }
+    
+    return root
+  }
+}
