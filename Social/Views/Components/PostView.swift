@@ -24,6 +24,10 @@ struct PostView: View {
   @State private var postImage: UIImage = UIImage(named: "logo.loading")!
   @State private var profileImage: UIImage = UIImage(named: "logo.loading")!
   
+  @State private var alertTitle: String = ""
+  @State private var alertMessage: String = ""
+  @State private var showAlert: Bool = false
+  
   
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -102,7 +106,7 @@ struct PostView: View {
               }
             }
           
-          NavigationLink(destination: CommentsView()) {
+          NavigationLink(destination: CommentsView(post: post)) {
             Image(systemName: "bubble.middle.bottom")
               .font(.title3)
               .foregroundColor(.primary)
@@ -126,6 +130,9 @@ struct PostView: View {
     .onAppear {
       // download the images
       getImages()
+    }
+    .alert(isPresented: $showAlert) {
+      return Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Ok")))
     }
   }
 }
@@ -235,7 +242,17 @@ extension PostView {
   
   
   private func reportPost(reason: String) {
-    
+    DataService.shared.uploadReport(reason: reason, postID: post.postID) { succes in
+      if succes {
+        self.alertTitle = "Successfully Reported"
+        self.alertMessage = "Thanks for reporting this post. We will review it shortly and take teh appropriate action"
+        self.showAlert.toggle()
+      } else {
+        self.alertTitle = "Error"
+        self.alertMessage = "There was an error uploading the report. Please check your internet connections and try again"
+        self.showAlert.toggle()
+      }
+    }
   }
   
   

@@ -51,4 +51,33 @@ struct DatabasePostField {
   
   static let likeCount = "like_count" // INT
   static let likedBy = "liked_by" // String[]
+  
+  static let comments = "comments" // sub-collection, nested object Comment
+}
+
+
+/// Fields within the Report Document in Database in a Report table
+/// these are the field names / keys
+struct DatabaseReportsField {
+  
+  private init() { }
+  
+  static let content = "content"
+  static let postID = "post_id"
+  static let createdAt = "created_at"
+  
+}
+
+/// Fields within the Comment Document in Database as a sub document for Post
+/// these are the field names / keys
+struct DatabaseCommentField {
+  
+  private init() { }
+  
+  static let commentID = "comment_id"
+  static let userID = "user_id"
+  static let displayName = "display_name"
+  static let content = "content"
+  static let createdAt = "created_at"
+
 }

@@ -17,6 +17,7 @@ class DataService {
   private init() { }
   
   private var REF_POSTS = DATABASE.collection("posts")
+  private var REF_REPORTS = DATABASE.collection("reports")
   
   @AppStorage(CurrentUserDefaultsKeys.userID) private var currentUserID: String?
   
@@ -58,6 +59,55 @@ class DataService {
         print("error uploading post image to firebase")
         handler(false)
       }
+    }
+  }
+  
+  
+  /// used to report a post in our application
+  /// creates a report entry in a reports table in our database
+  func uploadReport(reason: String, postID: String, handler: @escaping (_ succes: Bool) -> Void) {
+    
+    let data: [String: Any] = [
+      DatabaseReportsField.content: reason,
+      DatabaseReportsField.postID: postID,
+      DatabaseReportsField.createdAt: FieldValue.serverTimestamp()
+    ]
+    
+    REF_REPORTS.addDocument(data: data) { error in
+      if let error = error {
+        print("Error uploading report\n\(error)")
+        handler(false)
+        return
+      }
+      
+      handler(true)
+    }
+  }
+  
+  
+  /// uploads a comment to the database
+  /// display name and the user id is the creator of the comment
+  func uploadComment(postID: String, content: String, displayName: String, userID: String, handler: @escaping (_ success: Bool, _ commentID: String?) -> Void) {
+    
+    let document = REF_POSTS.document(postID).collection(DatabasePostField.comments).document()
+    let commentID = document.documentID
+    
+    let data: [String: Any] = [
+      DatabaseCommentField.commentID: commentID,
+      DatabaseCommentField.userID: userID,
+      DatabaseCommentField.content: content,
+      DatabaseCommentField.displayName: displayName,
+      DatabaseCommentField.createdAt: FieldValue.serverTimestamp()
+    ]
+    
+    document.setData(data) { error in
+      if let error = error {
+        print("Error uploading comment\n\(error)")
+        handler(false, nil)
+        return
+      }
+      
+      handler(true, commentID)
     }
   }
   
