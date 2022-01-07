@@ -49,4 +49,6 @@ struct DatabasePostField {
   static let caption = "caption"
   static let createdAt = "created_at"
   
+  static let likeCount = "like_count" // INT
+  static let likedBy = "liked_by" // String[]
 }

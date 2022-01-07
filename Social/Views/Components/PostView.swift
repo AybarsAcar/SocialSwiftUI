@@ -10,6 +10,8 @@ import SwiftUI
 
 struct PostView: View {
   
+  @AppStorage(CurrentUserDefaultsKeys.userID) private var currentUserID: String?
+  
   @State var post: Post
   let showHeaderAndFooter: Bool
   let addHeartAnimationToView: Bool
@@ -73,7 +75,9 @@ struct PostView: View {
           .resizable()
           .scaledToFit()
           .onTapGesture(count: 2) {
-            likePost()
+            if !post.isLikedByUser {
+              likePost()
+            }
           }
         
         if addHeartAnimationToView {
@@ -136,11 +140,15 @@ extension PostView {
   
   private func likePost() {
     
+    // we must sign in to like a post
+    guard let userID = currentUserID else { return }
+    
     // update local data
     let updatedPost = Post(postID: post.postID, userID: post.userID, username: post.username, caption: post.caption, createdAt: post.createdAt, likeCount: post.likeCount + 1, isLikedByUser: true)
     
     self.post = updatedPost
     
+    // animate the UI
     withAnimation(.easeInOut(duration: 0.5)){
       animateLike = true
     }
@@ -150,14 +158,23 @@ extension PostView {
         animateLike = false
       }
     }
+    
+    // update the database
+    DataService.shared.likePost(postID: post.postID, currentUserID: userID)
   }
   
   
   private func unlikePost() {
+    // we must sign in to unlike a post
+    guard let userID = currentUserID else { return }
+    
     // update local data
     let updatedPost = Post(postID: post.postID, userID: post.userID, username: post.username, caption: post.caption, createdAt: post.createdAt, likeCount: post.likeCount - 1, isLikedByUser: false)
     
     self.post = updatedPost
+    
+    // update the database
+    DataService.shared.unLikePost(postID: post.postID, currentUserID: userID)
   }
   
   

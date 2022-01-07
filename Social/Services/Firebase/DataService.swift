@@ -18,6 +18,8 @@ class DataService {
   
   private var REF_POSTS = DATABASE.collection("posts")
   
+  @AppStorage(CurrentUserDefaultsKeys.userID) private var currentUserID: String?
+  
   
   /// displayName and userID is the currently logged in user who
   /// creates the post
@@ -82,6 +84,33 @@ class DataService {
   }
   
   
+  /// function to handle the like a post by its id by the user with their id
+  func likePost(postID: String, currentUserID: String) {
+    
+    // update the like count and
+    // update the array of users who liked the post
+    let data: [String: Any] = [
+      DatabasePostField.likeCount: FieldValue.increment(1 as Int64),
+      DatabasePostField.likedBy: FieldValue.arrayUnion([currentUserID])
+    ]
+    
+    REF_POSTS.document(postID).updateData(data)
+  }
+  
+  
+  func unLikePost(postID: String, currentUserID: String) {
+    
+    // update the like count and
+    // update the array of users who liked the post
+    let data: [String: Any] = [
+      DatabasePostField.likeCount: FieldValue.increment(-1 as Int64),
+      DatabasePostField.likedBy: FieldValue.arrayRemove([currentUserID])
+    ]
+    
+    REF_POSTS.document(postID).updateData(data)
+  }
+  
+  
   private func getPostsFromSnapshot(_ querySnapshot: QuerySnapshot?) -> [Post] {
     
     var postArray: [Post] = []
@@ -97,7 +126,17 @@ class DataService {
           let caption = document.get(DatabasePostField.caption) as? String
           let postID = document.documentID
           
-          let post = Post(postID: postID, userID: userID, username: displayName, caption: caption, createdAt: timestamp.dateValue(), likeCount: 0, isLikedByUser: false)
+          let likeCount = document.get(DatabasePostField.likeCount) as? Int ?? 0
+          
+          var likedByUser = false
+          
+          if let userIDArray = document.get(DatabasePostField.likedBy) as? [String],
+             let currentUserID = self.currentUserID {
+            
+            likedByUser = userIDArray.contains(currentUserID)
+          }
+          
+          let post = Post(postID: postID, userID: userID, username: displayName, caption: caption, createdAt: timestamp.dateValue(), likeCount: likeCount, isLikedByUser: likedByUser)
           
           postArray.append(post)
         }
