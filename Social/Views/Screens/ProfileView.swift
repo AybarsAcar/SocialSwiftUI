@@ -11,13 +11,11 @@ import SwiftUI
 struct ProfileView: View {
   
   @Environment(\.colorScheme) private var colorScheme
-
-  
-  var posts = PostArrayObject()
   
   @State var profileDisplayName: String
   let profileUserID: String
   let isMyProfile: Bool
+  var posts: PostArrayObject
   
   @State private var profileImage: UIImage = UIImage(named: "logo.loading")!
   
@@ -74,7 +72,7 @@ extension ProfileView {
 struct ProfileView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
-      ProfileView(profileDisplayName: "Aybars Acar", profileUserID: "", isMyProfile: true)
+      ProfileView(profileDisplayName: "Aybars Acar", profileUserID: "", isMyProfile: true, posts: PostArrayObject())
     }
   }
 }

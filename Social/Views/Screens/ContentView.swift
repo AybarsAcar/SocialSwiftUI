@@ -17,11 +17,14 @@ struct ContentView: View {
   @AppStorage(CurrentUserDefaultsKeys.userID) private var currentUserID: String?
   @AppStorage(CurrentUserDefaultsKeys.displayName) private var currentUserDisplayName: String?
   
+  let feedPosts = PostArrayObject(shuffled: false)
+  let browsePosts = PostArrayObject(shuffled: true)
+  
   var body: some View {
     
     TabView {
       NavigationView {
-        FeedView(posts: PostArrayObject(), title: "Feed")
+        FeedView(posts: feedPosts, title: "Feed")
       }
       .tabItem {
         Image(systemName: "book.fill")
@@ -29,7 +32,7 @@ struct ContentView: View {
       }
       
       NavigationView {
-        BrowseView()
+        BrowseView(posts: browsePosts)
       }
       .tabItem {
         Image(systemName: "magnifyingglass")
@@ -47,7 +50,7 @@ struct ContentView: View {
         
         if let userID = currentUserID, let displayName = currentUserDisplayName {
           NavigationView{
-            ProfileView(profileDisplayName: displayName, profileUserID: userID, isMyProfile: true)
+            ProfileView(profileDisplayName: displayName, profileUserID: userID, isMyProfile: true, posts: PostArrayObject(userID: userID))
           }
         } else {
           SignUpView()

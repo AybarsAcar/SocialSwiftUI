@@ -55,6 +55,17 @@ class ImageManager {
   }
   
   
+  func downloadPostImage(postID: String, handler: @escaping (_ image: UIImage?) -> Void) {
+    // get the path
+    let path = getPostImagePath(postID: postID)
+    
+    // download from the path
+    downloadImage(from: path) { image in
+      handler(image)
+    }
+  }
+  
+  
   /// returns the path for the profile image based on the userID
   private func getProfileImagePath(userID: String) -> StorageReference {
     

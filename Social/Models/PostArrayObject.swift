@@ -13,7 +13,8 @@ class PostArrayObject: ObservableObject {
   
   @Published var dataArray: [Post] = []
   
-  
+#if DEBUG
+  /// test init for default sample posts
   init() {
     let post1 = Post(postID: "", userID: "", username: "Aybars Acar", caption: "This is a test caption",createdAt: Date(), likeCount: 0, isLikedByUser: false)
     let post2 = Post(postID: "", userID: "", username: "Jessica", caption: nil,createdAt: Date(), likeCount: 204, isLikedByUser: true)
@@ -25,9 +26,39 @@ class PostArrayObject: ObservableObject {
     dataArray.append(post3)
     dataArray.append(post4)
   }
+#endif
   
   /// used for single post selection
   init(post: Post) {
     dataArray.append(post)
+  }
+  
+  
+  /// used for getting posts for user profile
+  /// fetches the posts posted by the user id passed in
+  init(userID: String) {
+    DataService.shared.downloadPostsForUser(userID: userID) { posts in
+      
+      let sortedPosts = posts.sorted { p1, p2 in
+        return p1.createdAt > p2.createdAt
+      }
+      
+      self.dataArray.append(contentsOf: sortedPosts)
+    }
+  }
+  
+  
+  /// used for feed
+  /// returns all the posts in the database
+  init(shuffled: Bool) {
+    DataService.shared.downloadPostsForFeed { posts in
+      
+      if shuffled {
+        let shuffledPosts = posts.shuffled()
+        self.dataArray.append(contentsOf: shuffledPosts)
+      } else {
+        self.dataArray.append(contentsOf: posts)
+      }
+    }
   }
 }

@@ -20,6 +20,7 @@
 		00994B0F2786687600A47B84 /* OnboardringViewPart2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00994B0E2786687600A47B84 /* OnboardringViewPart2.swift */; };
 		00994B112786718100A47B84 /* LikeAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00994B102786718100A47B84 /* LikeAnimationView.swift */; };
 		00994B1327868E7200A47B84 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 00994B1227868E7200A47B84 /* GoogleService-Info.plist */; };
+		00A4921827883D11000B5444 /* LazyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A4921727883D11000B5444 /* LazyView.swift */; };
 		00A6F354278516A800867E14 /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A6F353278516A800867E14 /* FeedView.swift */; };
 		00A6F3562785175200867E14 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A6F3552785175200867E14 /* PostView.swift */; };
 		00A6F35927851B1000867E14 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A6F35827851B1000867E14 /* Post.swift */; };
@@ -62,6 +63,7 @@
 		00994B0E2786687600A47B84 /* OnboardringViewPart2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardringViewPart2.swift; sourceTree = "<group>"; };
 		00994B102786718100A47B84 /* LikeAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeAnimationView.swift; sourceTree = "<group>"; };
 		00994B1227868E7200A47B84 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		00A4921727883D11000B5444 /* LazyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyView.swift; sourceTree = "<group>"; };
 		00A6F353278516A800867E14 /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		00A6F3552785175200867E14 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		00A6F35827851B1000867E14 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				003141B52787B5C400FABFCD /* Documents.swift */,
+				00A4921727883D11000B5444 /* LazyView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -404,6 +407,7 @@
 				00A6F3672785793B00867E14 /* ImageGridView.swift in Sources */,
 				00A6F35B278522F200867E14 /* PostArrayObject.swift in Sources */,
 				00A6F36F27858B7800867E14 /* ProfileView.swift in Sources */,
+				00A4921827883D11000B5444 /* LazyView.swift in Sources */,
 				00A6F36327852D4D00867E14 /* BrowseView.swift in Sources */,
 				00994B112786718100A47B84 /* LikeAnimationView.swift in Sources */,
 				00A6F3562785175200867E14 /* PostView.swift in Sources */,

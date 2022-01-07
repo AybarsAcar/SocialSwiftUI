@@ -10,7 +10,7 @@ import SwiftUI
 
 struct BrowseView: View {
   
-  @ObservedObject var posts = PostArrayObject()
+  var posts: PostArrayObject
   
   var body: some View {
     ScrollView(.vertical, showsIndicators: false) {
@@ -28,7 +28,7 @@ struct BrowseView: View {
 struct BrowseView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
-      BrowseView()
+      BrowseView(posts: PostArrayObject())
     }
   }
 }

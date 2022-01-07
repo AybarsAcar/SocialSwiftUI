@@ -19,7 +19,8 @@ struct PostView: View {
   @State private var showActionSheet: Bool = false
   @State private var actionSheetType: PostActionSheetOption = .general
   
-  @State private var postImage: UIImage = UIImage(named: "dog1")!
+  @State private var postImage: UIImage = UIImage(named: "logo.loading")!
+  @State private var profileImage: UIImage = UIImage(named: "logo.loading")!
   
   
   var body: some View {
@@ -28,9 +29,18 @@ struct PostView: View {
       if showHeaderAndFooter {
         HStack {
           // MARK: HEADER
-          NavigationLink(destination: ProfileView(profileDisplayName: post.username, profileUserID: post.userID, isMyProfile: false)) {
+          NavigationLink(
+            destination: LazyView(content: {
+              ProfileView(
+                profileDisplayName: post.username,
+                profileUserID: post.userID,
+                isMyProfile: false,
+                posts: PostArrayObject(userID: post.userID)
+              )
+            })
+          ) {
             
-            Image("dog1")
+            Image(uiImage: profileImage)
               .resizable()
               .scaledToFill()
               .frame(width: 30, height: 30)
@@ -109,6 +119,10 @@ struct PostView: View {
         }
       }
     }
+    .onAppear {
+      // download the images
+      getImages()
+    }
   }
 }
 
@@ -144,6 +158,25 @@ extension PostView {
     let updatedPost = Post(postID: post.postID, userID: post.userID, username: post.username, caption: post.caption, createdAt: post.createdAt, likeCount: post.likeCount - 1, isLikedByUser: false)
     
     self.post = updatedPost
+  }
+  
+  
+  
+  /// called when the post appear on the screen
+  private func getImages() {
+    // get profile image
+    ImageManager.shared.downloadProfileImage(userID: post.userID) { image in
+      if let image = image {
+        self.profileImage = image
+      }
+    }
+    
+    // get the post image
+    ImageManager.shared.downloadPostImage(postID: post.postID) { image in
+      if let image = image {
+        self.postImage = image
+      }
+    }
   }
   
   
