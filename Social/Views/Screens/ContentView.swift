@@ -13,7 +13,8 @@ struct ContentView: View {
   // get access to the device's default color scheme
   @Environment(\.colorScheme) private var colorScheme
   
-  var currentUserID: String? = nil
+  // access the UserDefaults value
+  @AppStorage(CurrentUserDefaultsKeys.userID) var currentUserID: String?
   
   
   var body: some View {

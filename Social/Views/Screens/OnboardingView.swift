@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 
 struct OnboardingView: View {
@@ -16,6 +17,11 @@ struct OnboardingView: View {
   @State var showError: Bool = false
   @State var errorMessage: String? = nil
   @State var isLoading: Bool = false
+  
+  @State private var displayName: String = ""
+  @State private var email: String = ""
+  @State private var providerID: String = ""
+  @State private var provider: String = ""
   
   
   var body: some View {
@@ -80,11 +86,41 @@ struct OnboardingView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.theme.beige)
     .edgesIgnoringSafeArea(.all)
-    .fullScreenCover(isPresented: $isOnboardingPart2Displayed) {
-      OnboardringViewPart2()
+    .fullScreenCover(isPresented: $isOnboardingPart2Displayed, onDismiss: {
+      // dismiss the current view
+      self.presentationMode.wrappedValue.dismiss()
+    }) {
+      OnboardringViewPart2(displayName: $displayName, email: $email, providerID: $providerID, provider: $provider)
     }
     .alert(isPresented: $showError) {
-      return Alert(title: Text("Error Signing in"), message: Text("Unexpected Error occurred when signing in"))
+      return Alert(title: Text("Error Signing in"), message: Text(errorMessage ?? "Unexpected error courred when signing in"))
+    }
+  }
+}
+
+
+extension OnboardingView {
+  
+  func connectToFirebase(name: String, email: String, provider: String, credential: AuthCredential) {
+    
+    AuthService.shared.loginUserToFirebase(credential: credential) { providerID, isError, errorMessage in
+      
+      if let providerID = providerID, !isError {
+        // success - set the variables
+        self.displayName = name
+        self.email = email
+        self.providerID = providerID
+        self.provider = provider
+        
+        // go onto the onboarding view part 2
+        self.isOnboardingPart2Displayed.toggle()
+        
+      } else {
+        // error exists
+        print(errorMessage ?? "Unexpected error occurred")
+        self.errorMessage = errorMessage
+        self.showError.toggle()
+      }
     }
   }
 }

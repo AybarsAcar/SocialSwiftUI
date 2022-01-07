@@ -54,22 +54,8 @@ class SignInWithGoogle {
 
       let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
       
+      self.onboardingView.connectToFirebase(name: fullName, email: email, provider: "google", credential: credential)
       
-      // Sign them into  Firebase Auth..
-      Auth.auth().signIn(with: credential) { result, error in
-        
-        if let error = error {
-          print(error.localizedDescription)
-          self.onboardingView.showError.toggle()
-          self.onboardingView.errorMessage = error.localizedDescription
-          return
-        }
-        
-        // Displaying username
-        guard let user = result?.user else { return }
-        
-        print(user.displayName ?? "SUCCESS!!")
-      }
     }
   }
   
