@@ -26,26 +26,36 @@ class AuthService {
   
   
   /// Sign them into  Firebase Auth..
-  func loginUserToFirebase(credential: AuthCredential, handler: @escaping (_ providerID: String?, _ isError: Bool, _ errorMessage: String?) -> Void) {
+  func loginUserToFirebase(credential: AuthCredential, handler: @escaping (_ providerID: String?, _ isError: Bool, _ errorMessage: String?, _ isNewUser: Bool?, _ userID: String?) -> Void) {
     
     Auth.auth().signIn(with: credential) { result, error in
       
       if let error = error {
         print(error.localizedDescription)
         
-        handler(nil, true, error.localizedDescription)
+        handler(nil, true, error.localizedDescription, nil, nil)
         return
       }
       
       // Displaying username
       guard let providerID = result?.user.uid else {
         
-        handler(nil, true, "Error getting the providcer ID")
+        handler(nil, true, "Error getting the providcer ID", nil, nil)
         return
       }
       
-      // success connecting to Firebase Auth
-      handler(providerID, false, nil)
+      // check if the user already exists
+      self.checkIfUserExistsInDatabase(providerID: providerID) { existingUserID in
+        
+        if let existingUserID = existingUserID {
+          // user already exists - log in to app immediately
+          handler(providerID, false, nil, false, existingUserID)
+          
+        } else {
+          // user does not exist - create new user
+          handler(providerID, false, nil, true, nil)
+        }
+      }
     }
   }
   
@@ -126,5 +136,55 @@ class AuthService {
       print("error getting user info")
       handler(nil, nil)
     }
+  }
+  
+  
+  /// logs the user out of the firebase and the applicaiton
+  /// returns a handler with a success boolean
+  func logoutUser(handler: @escaping (_ success: Bool) -> Void) {
+    
+    do {
+      try Auth.auth().signOut()
+      
+    } catch {
+      print("Error Logging out\n\(error)")
+      handler(false)
+    }
+    
+    handler(true)
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      // clear the userdefaults
+      let defaultsDictionary = UserDefaults.standard.dictionaryRepresentation()
+      
+      defaultsDictionary.keys.forEach { key in
+        UserDefaults.standard.removeObject(forKey: key)
+      }
+    }
+  }
+  
+  
+  /// checks the Firestore database if the user already exists givena provider id
+  /// if user exists user id (document id) is returned through a callback handler
+  private func checkIfUserExistsInDatabase(providerID: String, handler: @escaping (_ existingUserID: String?) -> Void) {
+    
+    REF_USERS
+      .whereField(DatabaseUserField.providerID, isEqualTo: providerID)
+      .getDocuments { querySnaphot, error in
+        
+        if let snapshot = querySnaphot,
+           snapshot.count > 0,
+           let document = snapshot.documents.first {
+          
+          // because we set the user id to document id
+          let existingUserID = document.documentID
+          
+          handler(existingUserID)
+          return
+        }
+        
+        // user do not exist in the db
+        handler(nil)
+      }
   }
 }

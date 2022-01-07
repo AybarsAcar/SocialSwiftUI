@@ -13,6 +13,8 @@ struct SettingsView: View {
   @Environment(\.presentationMode) private var presentationMode
   @Environment(\.colorScheme) private var colorScheme
   
+  @State private var showError: Bool = false
+  
   
   var body: some View {
     
@@ -71,7 +73,14 @@ struct SettingsView: View {
               SettingsRowView(icon: "photo", text: "Profile Picture", color: .theme.purple)
             }
             
-            SettingsRowView(icon: "figure.walk", text: "Sign out", color: .theme.purple)
+            Button(action: {
+              signOut()
+            }) {
+              SettingsRowView(icon: "figure.walk", text: "Sign out", color: .theme.purple)
+            }
+            .alert("Error logging out", isPresented: $showError) {
+              
+            }
           }
           
         } label: {
@@ -123,6 +132,24 @@ struct SettingsView: View {
       }
     }
     .accentColor(colorScheme == .light ? .theme.purple : .theme.yellow)
+  }
+}
+
+
+extension SettingsView {
+  
+  func signOut() {
+    AuthService.shared.logoutUser { success in
+      if success {
+        // dismiss the settings view
+        self.presentationMode.wrappedValue.dismiss()
+        
+      } else {
+        print ("error logging out")
+        
+        self.showError.toggle()
+      }
+    }
   }
 }
 

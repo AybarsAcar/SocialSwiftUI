@@ -103,18 +103,51 @@ extension OnboardingView {
   
   func connectToFirebase(name: String, email: String, provider: String, credential: AuthCredential) {
     
-    AuthService.shared.loginUserToFirebase(credential: credential) { providerID, isError, errorMessage in
+    AuthService.shared.loginUserToFirebase(credential: credential) { providerID, isError, errorMessage, isNewUser, userID in
       
-      if let providerID = providerID, !isError {
-        // success - set the variables
-        self.displayName = name
-        self.email = email
-        self.providerID = providerID
-        self.provider = provider
+      if let isNewUser = isNewUser {
         
-        // go onto the onboarding view part 2
-        self.isOnboardingPart2Displayed.toggle()
-        
+        if isNewUser {
+          // new user
+          if let providerID = providerID, !isError {
+            // success - set the variables for new user
+            self.displayName = name
+            self.email = email
+            self.providerID = providerID
+            self.provider = provider
+            
+            // go onto the onboarding view part 2 for new user
+            self.isOnboardingPart2Displayed.toggle()
+            
+          } else {
+            // error exists - getting provider id
+            print(errorMessage ?? "Unexpected error occurred")
+            self.errorMessage = errorMessage
+            self.showError.toggle()
+          }
+          
+        } else {
+          // already existing user
+          if let userID = userID {
+            // success log into app directly
+            AuthService.shared.loginUserToApp(userID: userID) { success in
+              if success {
+                // dismiss onboarding screen
+                self.presentationMode.wrappedValue.dismiss()
+              } else {
+                print(errorMessage ?? "Unexpected error occurred")
+                self.errorMessage = errorMessage
+                self.showError.toggle()
+              }
+            }
+            
+          } else {
+            // there is an error getting user id for an existing user
+            print(errorMessage ?? "Unexpected error occurred")
+            self.errorMessage = errorMessage
+            self.showError.toggle()
+          } 
+        }
       } else {
         // error exists
         print(errorMessage ?? "Unexpected error occurred")

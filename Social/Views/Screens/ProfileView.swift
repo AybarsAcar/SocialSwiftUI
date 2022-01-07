@@ -19,13 +19,15 @@ struct ProfileView: View {
   let profileUserID: String
   let isMyProfile: Bool
   
+  @State private var profileImage: UIImage = UIImage(named: "logo.loading")!
+  
   @State private var isSettingsDisplayed: Bool = false
   
   
   var body: some View {
     
     ScrollView(.vertical, showsIndicators: false) {
-      ProfileHeaderView(profileDisplayName: $profileDisplayName)
+      ProfileHeaderView(profileDisplayName: $profileDisplayName, profileImage: $profileImage)
       
       Divider()
         .frame(width: UIScreen.main.bounds.width * 0.6 )
@@ -45,6 +47,9 @@ struct ProfileView: View {
         .opacity(isMyProfile ? 1.0 : 0.0)
       }
     }
+    .onAppear(perform: {
+      getProfileImage()
+    })
     .sheet(isPresented: $isSettingsDisplayed, onDismiss: {
       isSettingsDisplayed = false
     }) {
@@ -53,6 +58,17 @@ struct ProfileView: View {
   }
 }
 
+
+extension ProfileView {
+  
+  func getProfileImage() {
+    ImageManager.shared.downloadProfileImage(userID: profileUserID) { image in
+      if let image = image {
+        profileImage = image
+      }
+    }
+  }
+}
 
 
 struct ProfileView_Previews: PreviewProvider {

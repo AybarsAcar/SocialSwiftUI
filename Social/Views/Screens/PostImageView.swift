@@ -10,11 +10,17 @@ import SwiftUI
 
 struct PostImageView: View {
   
+  @AppStorage(CurrentUserDefaultsKeys.userID) private var currentUserID: String?
+  @AppStorage(CurrentUserDefaultsKeys.displayName) private var currentUserDisplayName: String?
+  
   @Environment(\.presentationMode) private var presentationMode
   @Environment(\.colorScheme) private var colorScheme
   
   @State var captionText: String = ""
   @Binding var selectedImage: UIImage
+  
+  @State private var showAlert: Bool = false
+  @State private var postUploadedSuccessfully: Bool = false
   
   
   var body: some View {
@@ -67,6 +73,9 @@ struct PostImageView: View {
         }
         .accentColor(colorScheme == .light ? .theme.yellow : .theme.purple)
       }
+      .alert(isPresented: $showAlert) {
+        getAlert()
+      }
     }
   }
 }
@@ -76,6 +85,26 @@ extension PostImageView {
   
   func postPicture() {
     
+    guard let userID = currentUserID, let displayName = currentUserDisplayName else { return }
+    
+    DataService.shared.uploadPost(image: selectedImage, caption: captionText, displayName: displayName, userID: userID) { success in
+      // update the local variable
+      self.postUploadedSuccessfully = success
+      self.showAlert.toggle()
+    }
+  }
+  
+  
+  /// for which alert to return
+  private func getAlert() -> Alert {
+    if postUploadedSuccessfully {
+      return Alert(title: Text("Successfully uploaded post! 🥳"), message: nil, dismissButton: .default(Text("Ok"), action: {
+        // dismiss the post image view
+        self.presentationMode.wrappedValue.dismiss()
+      }))
+    }
+    
+    return Alert(title: Text("Error uploading post 😭"), message: nil, dismissButton: .default(Text("Ok")))
   }
 }
 

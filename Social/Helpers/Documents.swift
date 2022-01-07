@@ -35,3 +35,18 @@ struct CurrentUserDefaultsKeys {
   static let bio = "bio"
   
 }
+
+
+/// Fields within the Post Document in Database
+/// these are the field names / keys
+struct DatabasePostField {
+  
+  private init() { }
+  
+  static let postID = "post_id"
+  static let userID = "user_id"
+  static let displayName = "display_name"
+  static let caption = "caption"
+  static let createdAt = "created_at"
+  
+}
