@@ -27,6 +27,9 @@ struct SettingsEditTextView: View {
   @State private var showSuccess: Bool = false
   
   
+  private let haptics = UINotificationFeedbackGenerator()
+  
+  
   var body: some View {
     VStack(alignment: .leading) {
       Text(description)
@@ -64,8 +67,7 @@ struct SettingsEditTextView: View {
     .navigationTitle(title)
     .alert(isPresented: $showSuccess) {
       return Alert(title: Text("Successfully updated"), message: nil, dismissButton: .default(Text("Ok"), action: {
-        // dismiss the current view and go back to the previous view (settings view)
-        presentationMode.wrappedValue.dismiss()
+        dismissView()
       }))
     }
   }
@@ -76,6 +78,14 @@ extension SettingsEditTextView {
   
   enum SettingsEditTextOption {
     case displayName, bio
+  }
+  
+  private func dismissView() {
+    
+    haptics.notificationOccurred(.success)
+    
+    // dismiss the current view and go back to the previous view (settings view)
+    presentationMode.wrappedValue.dismiss()
   }
   
   private func saveText() {

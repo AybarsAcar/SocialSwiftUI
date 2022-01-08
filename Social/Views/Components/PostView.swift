@@ -81,6 +81,8 @@ struct PostView: View {
           .onTapGesture(count: 2) {
             if !post.isLikedByUser {
               likePost()
+              // log analytics
+              AnalyticsService.shared.likePostDoubleTapOnImage()
             }
           }
         
@@ -103,6 +105,7 @@ struct PostView: View {
               } else {
                 // user is liking the post
                 likePost()
+                AnalyticsService.shared.likePostHeartPressed()
               }
             }
           

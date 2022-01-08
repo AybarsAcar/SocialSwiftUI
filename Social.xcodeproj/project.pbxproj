@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		001083B9278944A200D69B2D /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001083B8278944A200D69B2D /* AnalyticsService.swift */; };
 		003141B62787B5C400FABFCD /* Documents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003141B52787B5C400FABFCD /* Documents.swift */; };
 		003141B92787B72600FABFCD /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003141B82787B72600FABFCD /* ImageManager.swift */; };
 		003141BB2787FFF900FABFCD /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003141BA2787FFF900FABFCD /* DataService.swift */; };
@@ -49,6 +50,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		001083B8278944A200D69B2D /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		003141B52787B5C400FABFCD /* Documents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Documents.swift; sourceTree = "<group>"; };
 		003141B82787B72600FABFCD /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		003141BA2787FFF900FABFCD /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			children = (
 				005BC4052786E6DD00147B52 /* AuthService.swift */,
 				003141BA2787FFF900FABFCD /* DataService.swift */,
+				001083B8278944A200D69B2D /* AnalyticsService.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -417,6 +420,7 @@
 				00A6F36927857DE000867E14 /* UploadView.swift in Sources */,
 				00994B0B278664E700A47B84 /* OnboardingView.swift in Sources */,
 				00A6F36B2785804C00867E14 /* ImagePicker.swift in Sources */,
+				001083B9278944A200D69B2D /* AnalyticsService.swift in Sources */,
 				00A6F36527852E6B00867E14 /* CarouselView.swift in Sources */,
 				00BF95F22785113D0049B4A0 /* ColorExtensions.swift in Sources */,
 				003141BB2787FFF900FABFCD /* DataService.swift in Sources */,
