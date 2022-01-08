@@ -31,8 +31,9 @@ class ImageManager {
     imageCache.removeObject(forKey: path)
     
     // save image to path
-    uploadImage(to: path, image: image) { _ in
-      
+    DispatchQueue.global(qos: .userInteractive).async {
+      self.uploadImage(to: path, image: image) { _ in
+      }
     }
   }
   
@@ -42,8 +43,13 @@ class ImageManager {
     let path = getPostImagePath(postID: postID)
     
     // save image to path
-    uploadImage(to: path, image: image) { success in
-      handler(success)
+    DispatchQueue.global(qos: .userInteractive).async {
+      self.uploadImage(to: path, image: image) { success in
+        
+        DispatchQueue.main.async {
+          handler(success)
+        }
+      }
     }
   }
   
@@ -53,8 +59,12 @@ class ImageManager {
     let path = getProfileImagePath(userID: userID)
     
     // download from the path
-    downloadImage(from: path) { image in
-      handler(image)
+    DispatchQueue.global(qos: .userInteractive).async {
+      self.downloadImage(from: path) { image in
+        DispatchQueue.main.async {
+          handler(image)
+        }
+      }
     }
   }
   
@@ -64,8 +74,12 @@ class ImageManager {
     let path = getPostImagePath(postID: postID)
     
     // download from the path
-    downloadImage(from: path) { image in
-      handler(image)
+    DispatchQueue.global(qos: .userInteractive).async {
+      self.downloadImage(from: path) { image in
+        DispatchQueue.main.async {
+          handler(image)
+        }
+      }
     }
   }
   
