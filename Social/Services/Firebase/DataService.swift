@@ -134,6 +134,20 @@ class DataService {
   }
   
   
+  /// downloads the comments for the post
+  /// passes down the comments[] in the callback handler
+  func downloadComments(postID: String, handler: @escaping (_ comments: [Comment]) -> Void) {
+    
+    // order from oldest to newest - oldest will be at the top and most recent comment will be at the bottom
+    REF_POSTS.document(postID).collection(DatabasePostField.comments)
+      .order(by: DatabaseCommentField.createdAt, descending: false)
+      .getDocuments { querySnapshot, error in
+        
+        handler(self.getCommentsFromSnapshot(querySnapshot))
+      }
+  }
+  
+  
   /// function to handle the like a post by its id by the user with their id
   func likePost(postID: String, currentUserID: String) {
     
@@ -156,6 +170,26 @@ class DataService {
       DatabasePostField.likeCount: FieldValue.increment(-1 as Int64),
       DatabasePostField.likedBy: FieldValue.arrayRemove([currentUserID])
     ]
+    
+    REF_POSTS.document(postID).updateData(data)
+  }
+  
+  
+  /// update the username on the user posts
+  func updateDisplayNameOnPosts(userID: String, newDisplayName: String) {
+    
+    downloadPostsForUser(userID: userID) { posts in
+      
+      for post in posts {
+        self.updatePostDisplayName(postID: post.postID, displayName: newDisplayName)
+      }
+    }
+  }
+  
+  
+  private func updatePostDisplayName(postID: String, displayName: String) {
+    
+    let data: [String: Any] = [DatabasePostField.displayName: displayName]
     
     REF_POSTS.document(postID).updateData(data)
   }
@@ -196,5 +230,32 @@ class DataService {
     }
     
     return postArray
+  }
+  
+  
+  private func getCommentsFromSnapshot(_ querySnapshot: QuerySnapshot?) -> [Comment] {
+    
+    var commentArray: [Comment] = []
+    
+    if let snapshot = querySnapshot, snapshot.documents.count > 0 {
+      
+      for document in snapshot.documents {
+        
+        if let userID = document.get(DatabaseCommentField.userID) as? String,
+           let displayName = document.get(DatabaseCommentField.displayName) as? String,
+           let content = document.get(DatabaseCommentField.content) as? String,
+           let timestamp = document.get(DatabaseCommentField.createdAt) as? Timestamp {
+         
+          let newComment = Comment(commentID: document.documentID, userID: userID, username: displayName, content: content, createdAt: timestamp.dateValue())
+          
+          commentArray.append(newComment)
+        }
+      }
+      
+    } else {
+      print("No documents found for the post")
+    }
+    
+    return commentArray
   }
 }

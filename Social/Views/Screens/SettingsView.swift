@@ -13,6 +13,10 @@ struct SettingsView: View {
   @Environment(\.presentationMode) private var presentationMode
   @Environment(\.colorScheme) private var colorScheme
   
+  @Binding var userDisplayName: String
+  @Binding var userBio: String
+  @Binding var userProfilePicture: UIImage
+  
   @State private var showError: Bool = false
   
   
@@ -46,7 +50,9 @@ struct SettingsView: View {
                 title: "Display Name",
                 description: "You can edit your display name here. This will be seen by other users on your profile and on your posts.",
                 placeholder: "Your display name here...",
-                text: "Current displayname"
+                option: .displayName,
+                profileText: $userDisplayName,
+                text: userDisplayName
               )
             ) {
               SettingsRowView(icon: "pencil", text: "Display Name", color: .theme.purple)
@@ -57,7 +63,9 @@ struct SettingsView: View {
                 title: "Profile Bio",
                 description: "Your bio is a gread place to let other users know a little about you. It will be shown on your profile only",
                 placeholder: "Your bio here...",
-                text: "User bio"
+                option: .bio,
+                profileText: $userBio,
+                text: userBio
               )
             ) {
               SettingsRowView(icon: "text.quote", text: "Bio", color: .theme.purple)
@@ -67,7 +75,8 @@ struct SettingsView: View {
               destination: SettingsEditImageView(
                 title: "Profile Picture",
                 description: "Your profile picture will be shown on your profile and on your posts. Most users make it an image of themselves or of their dog",
-                selectedImage: UIImage(named: "dog1")!
+                selectedImage: userProfilePicture,
+                profileImage: $userProfilePicture
               )
             ) {
               SettingsRowView(icon: "photo", text: "Profile Picture", color: .theme.purple)
@@ -157,6 +166,6 @@ extension SettingsView {
 
 struct SettingsView_Previews: PreviewProvider {
   static var previews: some View {
-    SettingsView()
+    SettingsView(userDisplayName: .constant("Aybars Acar"), userBio: .constant("Bio goes here"), userProfilePicture: .constant(UIImage(named: "dog1")!))
   }
 }

@@ -17,6 +17,8 @@ struct ProfileView: View {
   let isMyProfile: Bool
   var posts: PostArrayObject
   
+  @State private var profileBio: String = ""
+  
   @State private var profileImage: UIImage = UIImage(named: "logo.loading")!
   
   @State private var isSettingsDisplayed: Bool = false
@@ -25,7 +27,7 @@ struct ProfileView: View {
   var body: some View {
     
     ScrollView(.vertical, showsIndicators: false) {
-      ProfileHeaderView(profileDisplayName: $profileDisplayName, profileImage: $profileImage)
+      ProfileHeaderView(profileDisplayName: $profileDisplayName, profileBio: $profileBio, profileImage: $profileImage, postArray: self.posts)
       
       Divider()
         .frame(width: UIScreen.main.bounds.width * 0.6 )
@@ -47,11 +49,12 @@ struct ProfileView: View {
     }
     .onAppear(perform: {
       getProfileImage()
+      getAdditionalProfileInfo()
     })
     .sheet(isPresented: $isSettingsDisplayed, onDismiss: {
       isSettingsDisplayed = false
     }) {
-      SettingsView()
+      SettingsView(userDisplayName: $profileDisplayName, userBio: $profileBio, userProfilePicture: $profileImage)
     }
   }
 }
@@ -63,6 +66,18 @@ extension ProfileView {
     ImageManager.shared.downloadProfileImage(userID: profileUserID) { image in
       if let image = image {
         profileImage = image
+      }
+    }
+  }
+  
+  func getAdditionalProfileInfo() {
+    AuthService.shared.getUserInfo(userID: profileUserID) { name, bio in
+      if let name = name {
+        self.profileDisplayName = name
+      }
+      
+      if let bio = bio {
+        self.profileBio = bio
       }
     }
   }

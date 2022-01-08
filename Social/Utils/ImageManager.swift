@@ -26,6 +26,10 @@ class ImageManager {
     // get the path where image will be saved
     let path = getProfileImagePath(userID: userID)
     
+    // clear the cache for the profile image so it will download the profile image for the other screen
+    // we want to download the image again when the profile image is updated
+    imageCache.removeObject(forKey: path)
+    
     // save image to path
     uploadImage(to: path, image: image) { _ in
       

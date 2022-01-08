@@ -12,6 +12,9 @@ import Foundation
 class PostArrayObject: ObservableObject {
   
   @Published var dataArray: [Post] = []
+  @Published var postCountAsString: String = "0" // so the view keeps watching
+  @Published var likeCountAsString: String = "0"
+  
   
 #if DEBUG
   /// test init for default sample posts
@@ -44,6 +47,7 @@ class PostArrayObject: ObservableObject {
       }
       
       self.dataArray.append(contentsOf: sortedPosts)
+      self.updateCounts()
     }
   }
   
@@ -60,5 +64,19 @@ class PostArrayObject: ObservableObject {
         self.dataArray.append(contentsOf: posts)
       }
     }
+  }
+  
+  
+  private func updateCounts() {
+    
+    // update post count
+    self.postCountAsString = "\(self.dataArray.count)"
+    
+    // update like count
+    let likeCountArray = dataArray.map { (post) -> Int in
+      return post.likeCount
+    }
+    let likeCount = likeCountArray.reduce(0, +)
+    self.likeCountAsString = "\(likeCount)"
   }
 }

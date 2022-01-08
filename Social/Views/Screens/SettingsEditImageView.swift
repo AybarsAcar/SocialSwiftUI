@@ -10,13 +10,20 @@ import SwiftUI
 
 struct SettingsEditImageView: View {
   
+  @Environment(\.presentationMode) private var presentationMode
+  
+  @AppStorage(CurrentUserDefaultsKeys.userID) private var currentUserID: String?
+  
   let title: String
   let description: String
 
   @State var selectedImage: UIImage
+  @Binding var profileImage: UIImage
   
   @State private var isImagePickerDisplayed: Bool = false
   @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
+  
+  @State private var showSuccessAlert: Bool = false
   
   
   var body: some View {
@@ -50,7 +57,9 @@ struct SettingsEditImageView: View {
         ImagePicker(selectedImage: $selectedImage, sourceType: $sourceType)
       }
       
-      Button(action: {}) {
+      Button(action: {
+        saveImage()
+      }) {
         Text("save".uppercased())
           .font(.title3)
           .fontWeight(.bold)
@@ -67,6 +76,29 @@ struct SettingsEditImageView: View {
     .padding()
     .frame(maxWidth: .infinity)
     .navigationTitle(title)
+    .alert(isPresented: $showSuccessAlert) {
+      return Alert(title: Text("Successfully updated the profile image!"), message: nil, dismissButton: .default(Text("Ok"), action: {
+        self.presentationMode.wrappedValue.dismiss()
+      }))
+    }
+  }
+}
+
+
+extension SettingsEditImageView {
+  
+  func saveImage() {
+    
+    guard let userID = currentUserID else { return }
+    
+    // update the ui of the profile
+    self.profileImage = self.selectedImage
+    
+    // update the profile image in the Firebase storage
+    // saving a new image with the exact location so it overrides the file
+    ImageManager.shared.uploadProfileImage(userID: userID, image: self.selectedImage)
+    
+    self.showSuccessAlert.toggle()
   }
 }
 
@@ -75,7 +107,9 @@ struct SettingsEditImageView: View {
 struct SettingsEditImageView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
-      SettingsEditImageView(title: "Title", description: "Description", selectedImage: UIImage(named: "dog1")!)
+      SettingsEditImageView(
+        title: "Title", description: "Description", selectedImage: UIImage(named: "dog1")!, profileImage: .constant(UIImage(named: "dog1")!)
+      )
     }
   }
 }

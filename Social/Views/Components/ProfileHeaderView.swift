@@ -11,7 +11,10 @@ import SwiftUI
 struct ProfileHeaderView: View {
   
   @Binding var profileDisplayName: String
+  @Binding var profileBio: String
   @Binding var profileImage: UIImage
+  @ObservedObject var postArray: PostArrayObject
+  
   
   var body: some View {
     
@@ -27,15 +30,17 @@ struct ProfileHeaderView: View {
         .font(.largeTitle)
         .fontWeight(.semibold)
       
-      Text("This is user bio")
-        .font(.body)
-        .fontWeight(.regular)
-        .multilineTextAlignment(.center)
+      if !profileBio.isEmpty {
+        Text(profileBio)
+          .font(.body)
+          .fontWeight(.regular)
+          .multilineTextAlignment(.center)
+      }
       
       HStack(alignment: .center, spacing: 20) {
         
         VStack(alignment: .center, spacing: 5) {
-          Text("5")
+          Text(postArray.postCountAsString)
             .font(.title2)
             .fontWeight(.bold)
           
@@ -48,7 +53,7 @@ struct ProfileHeaderView: View {
         }
         
         VStack(alignment: .center, spacing: 5) {
-          Text("20")
+          Text(postArray.likeCountAsString)
             .font(.title2)
             .fontWeight(.bold)
           
@@ -74,10 +79,10 @@ struct ProfileHeaderView_Previews: PreviewProvider {
   
   static var previews: some View {
     Group {
-      ProfileHeaderView(profileDisplayName: $name, profileImage: .constant(UIImage(named: "dog1")!))
+      ProfileHeaderView(profileDisplayName: $name, profileBio: .constant("This is a sample bio"), profileImage: .constant(UIImage(named: "dog1")!), postArray: PostArrayObject())
         .previewLayout(.sizeThatFits)
       
-      ProfileHeaderView(profileDisplayName: $name, profileImage: .constant(UIImage(named: "dog1")!))
+      ProfileHeaderView(profileDisplayName: $name, profileBio: .constant("This is a sample bio"), profileImage: .constant(UIImage(named: "dog1")!), postArray: PostArrayObject())
         .previewLayout(.sizeThatFits)
         .preferredColorScheme(.dark)
     }

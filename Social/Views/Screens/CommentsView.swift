@@ -68,7 +68,7 @@ struct CommentsView: View {
 
 extension CommentsView {
   
-  func getProfilePicture() {
+  private func getProfilePicture() {
     
     guard let userID = currentUserID else { return }
     
@@ -80,16 +80,21 @@ extension CommentsView {
   }
   
   
-  func getComments() {
-    let comment1 = Comment(commentID: "", userID: "", username: "Aybars", content: "This is a commment", createdAt: Date())
-    let comment2 = Comment(commentID: "", userID: "", username: "Jake", content: "This is the second commment", createdAt: Date())
-    let comment3 = Comment(commentID: "", userID: "", username: "Aybars", content: "This is the third commment", createdAt: Date())
-    let comment4 = Comment(commentID: "", userID: "", username: "Jessica", content: "This is the fourth commment", createdAt: Date())
+  private func getComments() {
     
-    self.comments.append(comment1)
-    self.comments.append(comment2)
-    self.comments.append(comment3)
-    self.comments.append(comment4)
+    // make sure the comment is empty to avoid making extra calls
+    guard self.comments.isEmpty else { return }
+    
+    if let caption = post.caption, !caption.isEmpty {
+      let captionComment = Comment(commentID: "", userID: post.userID, username: post.username, content: caption, createdAt: post.createdAt)
+      
+      // add the caption as the top comment
+      self.comments.append(captionComment)
+    }
+    
+    DataService.shared.downloadComments(postID: post.postID) { comments in
+      self.comments.append(contentsOf: comments)
+    }
   }
   
   
@@ -117,7 +122,7 @@ extension CommentsView {
   }
   
   
-  func isTextAppropriate() -> Bool {
+  private func isTextAppropriate() -> Bool {
     let badWordArray: [String] = ["shit", "ass"]
     
     let words = text.components(separatedBy: " ")

@@ -164,6 +164,38 @@ class AuthService {
   }
   
   
+  func updateUserDisplayName(userID: String, newDisplayName: String, handler: @escaping (_ success: Bool) -> Void) {
+    
+    let data: [String: Any] = [DatabaseUserField.displayName: newDisplayName]
+    
+    REF_USERS.document(userID).updateData(data) { error in
+      if let error = error {
+        print("Error updating user displayname\n\(error)")
+        handler(false)
+        return
+      }
+      
+      handler(true)
+    }
+  }
+  
+  
+  func updateUserBio(userID: String, newBio: String, handler: @escaping (_ success: Bool) -> Void) {
+    
+    let data: [String: Any] = [DatabaseUserField.bio: newBio]
+    
+    REF_USERS.document(userID).updateData(data) { error in
+      if let error = error {
+        print("Error updating user displayname\n\(error)")
+        handler(false)
+        return
+      }
+      
+      handler(true)
+    }
+  }
+  
+  
   /// checks the Firestore database if the user already exists givena provider id
   /// if user exists user id (document id) is returned through a callback handler
   private func checkIfUserExistsInDatabase(providerID: String, handler: @escaping (_ existingUserID: String?) -> Void) {
